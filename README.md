@@ -1,15 +1,29 @@
-# Shopify App Template - Remix
+# Shopify App - Promo Cart Manager
+
+A Shopify app that automatically adds products to customer carts when they apply specific promo codes, and removes them when the code is changed or removed.
+
+## Features
+
+✨ **Automatic Product Addition** - Add gifts or bonus products based on promo codes
+🔄 **Dynamic Cart Management** - Products automatically added/removed with code changes  
+⚙️ **Easy Configuration** - Simple admin UI for managing promo code mappings
+🎨 **Theme Integration** - Works with any Shopify theme via theme extension or manual integration
+
+## Documentation
+
+For complete documentation, see [PROMO_CART_MANAGER_README.md](./PROMO_CART_MANAGER_README.md)
+
+---
 
 > [!NOTE]
+> This app is built using the Shopify App Template - Remix framework.
 > **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
 > 
 > For new projects, use the **[Shopify App Template - React Router](https://github.com/Shopify/shopify-app-template-react-router)** instead.
 > 
 > To migrate your existing Remix app, follow the **[migration guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix)**.
 
-This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
-
-Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
+This app is built using the [Shopify app template](https://shopify.dev/docs/apps/getting-started) with the [Remix](https://remix.run) framework.
 
 Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-remix) for more details on the Remix app package.
 
