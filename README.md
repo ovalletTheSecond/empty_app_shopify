@@ -9,6 +9,17 @@
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
 
+## 📄 Invoice Manager Feature
+
+This app includes a complete invoice management system that allows you to generate CSV invoices from your Shopify orders. Features include:
+
+- **Single invoice generation** from individual order pages
+- **Bulk invoice generation** with advanced filtering (status, order number, limits)
+- **Bilingual CSV format** (French/English)
+- **Complete order details** including customer info, line items, and shipping address
+
+👉 **[See detailed documentation](./INVOICE_MANAGER.md)**
+
 Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
 
 Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-remix) for more details on the Remix app package.

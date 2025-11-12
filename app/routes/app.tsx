@@ -24,6 +24,8 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/invoices">Gestionnaire de factures</Link>
+        <Link to="/app/invoice-demo">Test facture unique</Link>
         <Link to="/app/additional">Additional page</Link>
       </NavMenu>
       <Outlet />
