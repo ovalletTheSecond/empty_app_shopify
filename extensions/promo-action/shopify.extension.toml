@@ -1,0 +1,10 @@
+# Learn more about configuring your extension at 
+# https://shopify.dev/docs/apps/app-extensions/configuration
+
+api_version = "2026-01"
+name = "promo-action"
+type = "admin_action"
+
+[[extensions.targeting]]
+module = "./src/ActionExtension.jsx"
+target = "admin.discount-code-basic.action.render"
