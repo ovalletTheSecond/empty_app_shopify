@@ -1,0 +1,18 @@
+# Learn more about configuring your extension at https://shopify.dev/docs/apps/app-extensions
+
+api_version = "2024-10"
+
+[[extensions]]
+type = "theme"
+name = "Promo Cart Manager"
+
+[extensions.settings]
+  [[extensions.settings.blocks]]
+  type = "app_block"
+  name = "Promo Cart Manager"
+  target = "body_end"
+  
+  [extensions.settings.blocks.settings]
+    [[extensions.settings.blocks.settings.content]]
+    type = "paragraph"
+    content = "This block automatically manages cart items based on applied promo codes. It should be placed at the end of the body."

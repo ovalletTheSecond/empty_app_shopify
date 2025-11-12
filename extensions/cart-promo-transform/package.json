@@ -1,0 +1,14 @@
+{
+  "name": "cart-promo-transform",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "shopify app function build"
+  },
+  "dependencies": {
+    "@shopify/shopify-api": "^13.0.0"
+  },
+  "devDependencies": {
+    "@shopify/cli": "latest"
+  }
+}
