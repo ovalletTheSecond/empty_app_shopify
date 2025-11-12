@@ -1,0 +1,214 @@
+{% comment %}
+  Promo Cart Manager
+  Automatically adds products to cart when specific promo codes are applied
+{% endcomment %}
+
+<script>
+(function() {
+  const SHOP_DOMAIN = '{{ shop.permanent_domain }}';
+  const APP_URL = '{{ shop.metafields.promo_cart_manager.app_url | default: "" }}';
+  
+  if (!APP_URL) {
+    console.warn('Promo Cart Manager: App URL not configured');
+    return;
+  }
+  
+  const API_ENDPOINT = APP_URL + '/api/promo-config?shop=' + SHOP_DOMAIN;
+  let promoConfigs = {};
+  let currentPromoCode = null;
+  let addedProductVariantId = null;
+
+  // Fetch promo configurations from the app
+  async function loadPromoConfigs() {
+    try {
+      const response = await fetch(API_ENDPOINT);
+      const data = await response.json();
+      promoConfigs = data.configs || {};
+      console.log('[Promo Cart Manager] Configs loaded:', Object.keys(promoConfigs).length);
+    } catch (error) {
+      console.error('[Promo Cart Manager] Error loading configs:', error);
+    }
+  }
+
+  // Get current cart state
+  async function getCart() {
+    try {
+      const response = await fetch('/cart.js');
+      return await response.json();
+    } catch (error) {
+      console.error('[Promo Cart Manager] Error fetching cart:', error);
+      return null;
+    }
+  }
+
+  // Add product to cart
+  async function addProductToCart(variantId, quantity = 1) {
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: quantity,
+          properties: {
+            '_promo_gift': 'true'
+          }
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+      
+      const result = await response.json();
+      console.log('[Promo Cart Manager] Product added:', variantId);
+      
+      // Trigger cart refresh event
+      document.dispatchEvent(new CustomEvent('cart:refresh'));
+      
+      return result;
+    } catch (error) {
+      console.error('[Promo Cart Manager] Error adding product:', error);
+      return null;
+    }
+  }
+
+  // Remove product from cart by key
+  async function removeProductFromCart(lineItemKey) {
+    try {
+      const response = await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: lineItemKey,
+          quantity: 0,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to remove product');
+      }
+      
+      console.log('[Promo Cart Manager] Product removed:', lineItemKey);
+      
+      // Trigger cart refresh event
+      document.dispatchEvent(new CustomEvent('cart:refresh'));
+      
+      return await response.json();
+    } catch (error) {
+      console.error('[Promo Cart Manager] Error removing product:', error);
+      return null;
+    }
+  }
+
+  // Check and handle promo code changes
+  async function handlePromoCodeChange() {
+    const cart = await getCart();
+    if (!cart) return;
+
+    // Get the applied discount code (check both locations)
+    let appliedPromoCode = null;
+    
+    // Check cart-level discount applications
+    if (cart.cart_level_discount_applications && cart.cart_level_discount_applications.length > 0) {
+      appliedPromoCode = cart.cart_level_discount_applications[0].title;
+    }
+    
+    // Normalize to uppercase for comparison
+    appliedPromoCode = appliedPromoCode ? appliedPromoCode.toUpperCase().trim() : null;
+
+    // If promo code hasn't changed, do nothing
+    if (appliedPromoCode === currentPromoCode) {
+      return;
+    }
+
+    console.log('[Promo Cart Manager] Promo code changed:', currentPromoCode, '->', appliedPromoCode);
+
+    // Remove previously added product if promo code was removed or changed
+    if (currentPromoCode && addedProductVariantId) {
+      // Find the line item with the promo gift property
+      const lineItem = cart.items.find(item => 
+        item.variant_id.toString() === addedProductVariantId.toString() &&
+        item.properties && item.properties._promo_gift === 'true'
+      );
+      
+      if (lineItem) {
+        await removeProductFromCart(lineItem.key);
+      }
+      addedProductVariantId = null;
+    }
+
+    // Add new product if new promo code matches configuration
+    if (appliedPromoCode && promoConfigs[appliedPromoCode]) {
+      const config = promoConfigs[appliedPromoCode];
+      // Use variant ID if specified, otherwise use product ID (first variant)
+      const variantId = config.variantId || config.productId;
+      
+      const result = await addProductToCart(variantId);
+      if (result) {
+        addedProductVariantId = variantId;
+      }
+    }
+
+    currentPromoCode = appliedPromoCode;
+  }
+
+  // Debounce function to prevent too many calls
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  const debouncedHandlePromoCodeChange = debounce(handlePromoCodeChange, 500);
+
+  // Monitor cart updates
+  function monitorCart() {
+    // Check on page load
+    handlePromoCodeChange();
+
+    // Listen for custom cart events
+    document.addEventListener('cart:updated', debouncedHandlePromoCodeChange);
+    document.addEventListener('cart:refresh', debouncedHandlePromoCodeChange);
+    
+    // For themes using Shopify's cart object
+    if (window.Shopify && window.Shopify.onCartUpdate) {
+      window.Shopify.onCartUpdate = function() {
+        debouncedHandlePromoCodeChange();
+      };
+    }
+    
+    // Poll for changes every 3 seconds as a fallback
+    setInterval(handlePromoCodeChange, 3000);
+  }
+
+  // Initialize
+  console.log('[Promo Cart Manager] Initializing...');
+  loadPromoConfigs().then(() => {
+    monitorCart();
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Promo Cart Manager",
+  "target": "body",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "This block automatically manages cart items based on applied promo codes. Configure your promo codes in the app admin panel."
+    }
+  ]
+}
+{% endschema %}

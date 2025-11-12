@@ -1,0 +1,17 @@
+# Learn more about configuring your extension at https://shopify.dev/docs/api/functions
+
+name = "cart-promo-transform"
+type = "function"
+
+[[extensions.targeting]]
+target = "purchase.cart-transform.run"
+
+[extensions.input]
+# See https://shopify.dev/docs/api/functions/input-output/cart-transform-run-input for more details
+type = "cart_transform"
+
+[build]
+command = "npm run build"
+path = "dist/index.wasm"
+
+[extensions.input.variables]

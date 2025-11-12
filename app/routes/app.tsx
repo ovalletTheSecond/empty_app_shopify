@@ -24,6 +24,8 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/promo-config">Promo Code Config</Link>
+        <Link to="/app/setup">Setup Instructions</Link>
         <Link to="/app/additional">Additional page</Link>
       </NavMenu>
       <Outlet />
