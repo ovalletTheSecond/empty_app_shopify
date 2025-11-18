@@ -25,7 +25,7 @@ export default function Index() {
 
   return (
     <Page>
-      <TitleBar title="Multiple Promo Codes Manager" />
+      <TitleBar title="Generate Code" />
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
@@ -33,7 +33,7 @@ export default function Index() {
               <BlockStack gap="500">
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Welcome to Multiple Promo Codes Manager 🎉
+                    Welcome to Generate Code 🎉
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This app helps you create and manage multiple promo codes efficiently.
@@ -47,35 +47,35 @@ export default function Index() {
                   <InlineStack gap="400" wrap={false}>
                     <Card>
                       <BlockStack gap="300">
-                        <Icon source={PlusCircleIcon} tone="base" />
+                        <Text as="span" variant="heading2xl">➕</Text>
                         <Text as="h4" variant="headingSm">
                           1. Create Parent Code
                         </Text>
                         <Text as="p" variant="bodyMd">
                           Start by creating a base promo code with discount details.
                         </Text>
-                        <Button onClick={() => navigate("/app/promo/create")}>
+                        <Button variant="primary" onClick={() => navigate("/app/promo/create")}>
                           Create Code
                         </Button>
                       </BlockStack>
                     </Card>
                     <Card>
                       <BlockStack gap="300">
-                        <Icon source={DuplicateIcon} tone="base" />
+                        <Text as="span" variant="heading2xl">🔄</Text>
                         <Text as="h4" variant="headingSm">
                           2. Duplicate Codes
                         </Text>
                         <Text as="p" variant="bodyMd">
                           Generate multiple unique codes from your parent code.
                         </Text>
-                        <Button onClick={() => navigate("/app/promo/duplicate")}>
+                        <Button variant="primary" onClick={() => navigate("/app/promo/duplicate")}>
                           Duplicate
                         </Button>
                       </BlockStack>
                     </Card>
                     <Card>
                       <BlockStack gap="300">
-                        <Icon source={ListBulletedIcon} tone="base" />
+                        <Text as="span" variant="heading2xl">📋</Text>
                         <Text as="h4" variant="headingSm">
                           3. Manage Codes
                         </Text>
@@ -95,27 +95,43 @@ export default function Index() {
           <Layout.Section variant="oneThird">
             <BlockStack gap="500">
               <Card>
-                <BlockStack gap="200">
+                <BlockStack gap="300">
                   <Text as="h2" variant="headingMd">
-                    Features
+                    ✨ Features
                   </Text>
                   <BlockStack gap="200">
                     <Text as="p" variant="bodyMd">
-                      ✓ Create parent promo codes
+                      ✅ Create parent promo codes
                     </Text>
                     <Text as="p" variant="bodyMd">
-                      ✓ Generate multiple unique codes
+                      ✅ Generate multiple unique codes
                     </Text>
                     <Text as="p" variant="bodyMd">
-                      ✓ Custom prefixes and lengths
+                      ✅ Custom prefixes and lengths
                     </Text>
                     <Text as="p" variant="bodyMd">
-                      ✓ Export to CSV
+                      ✅ Export to CSV
                     </Text>
                     <Text as="p" variant="bodyMd">
-                      ✓ Client-side storage (no backend needed)
+                      ✅ Live code preview
+                    </Text>
+                    <Text as="p" variant="bodyMd">
+                      ✅ Search & filter codes
                     </Text>
                   </BlockStack>
+                </BlockStack>
+              </Card>
+              <Card background="bg-surface-info">
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingMd">
+                    ❓ Need Help?
+                  </Text>
+                  <Text as="p" variant="bodyMd">
+                    Check out our step-by-step guide to learn how to use all features.
+                  </Text>
+                  <Button onClick={() => navigate("/app/help")}>
+                    View Help Guide
+                  </Button>
                 </BlockStack>
               </Card>
             </BlockStack>

@@ -1,5 +1,5 @@
 {
-  "name": "generic-skeleton",
+  "name": "discount-code-multiplier",
   "private": true,
   "scripts": {
     "build": "remix vite:build",

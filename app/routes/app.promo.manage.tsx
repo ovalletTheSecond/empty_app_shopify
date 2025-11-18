@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import { useNavigate } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -25,11 +26,26 @@ interface ParentCode {
   description: string;
   discountType: string;
   discountValue: string;
+  currency?: string;
+  minPurchaseAmount?: string;
+  maxUses?: string;
+  usageLimit?: string;
+  appliesOncePerCustomer?: boolean;
+  combineWithProductDiscounts?: boolean;
+  combineWithShippingDiscounts?: boolean;
+  combineWithOrderDiscounts?: boolean;
+  startsAt?: string;
+  endsAt?: string;
+  customerEligibility?: string;
+  specificCustomerEmail?: string;
+  customerSegment?: string;
+  channels?: string[];
   createdAt: string;
 }
 
 export default function PromoManage() {
   const shopify = useAppBridge();
+  const navigate = useNavigate();
   const [parentCodes, setParentCodes] = useState<ParentCode[]>([]);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
@@ -41,6 +57,13 @@ export default function PromoManage() {
   useEffect(() => {
     loadParentCodes();
   }, [loadParentCodes]);
+
+  const handleDuplicate = useCallback(
+    (id: string) => {
+      navigate(`/app/promo/create?duplicate=${id}`);
+    },
+    [navigate]
+  );
 
   const handleDelete = useCallback(
     (id: string) => {
@@ -83,14 +106,21 @@ export default function PromoManage() {
     code.description || "—",
     `${code.discountValue}%`,
     formatDate(code.createdAt),
-    <Button
-      key={code.id}
-      onClick={() => handleDelete(code.id)}
-      tone="critical"
-      size="slim"
-    >
-      Delete
-    </Button>,
+    <InlineStack gap="200" key={code.id}>
+      <Button
+        onClick={() => handleDuplicate(code.id)}
+        size="slim"
+      >
+        Create Children
+      </Button>
+      <Button
+        onClick={() => handleDelete(code.id)}
+        tone="critical"
+        size="slim"
+      >
+        Delete
+      </Button>
+    </InlineStack>,
   ]);
 
   return (
@@ -125,7 +155,7 @@ export default function PromoManage() {
                 <Banner title="No parent codes yet">
                   <Text as="p" variant="bodyMd">
                     Create a parent code to get started. Parent codes can be
-                    duplicated into multiple unique promo codes.
+                    used to create multiple child discount codes.
                   </Text>
                 </Banner>
               ) : (

@@ -1,4 +1,4 @@
-# Multiple Promo Codes Manager
+# Discount Code Multiplier
 
 A Shopify app for efficiently creating and managing multiple promo codes.
 

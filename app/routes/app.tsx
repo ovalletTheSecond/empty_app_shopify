@@ -24,10 +24,11 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/promo/create">Create Parent Code</Link>
-        <Link to="/app/promo/duplicate">Duplicate Codes</Link>
+        <Link to="/app/promo/create">Create Parent</Link>
+        <Link to="/app/promo/duplicate">Duplicate Child</Link>
         <Link to="/app/promo/manage">Manage Codes</Link>
-        <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/help">Help</Link>
+        <Link to="/app/settings">Settings</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

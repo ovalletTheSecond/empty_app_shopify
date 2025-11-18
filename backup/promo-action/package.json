@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@shopify/ui-extensions-react": "^2026.1.0"
+    "@shopify/ui-extensions-react": "^2024.10.0"
+  },
+  "devDependencies": {
+    "react": "^18.2.0"
   }
 }

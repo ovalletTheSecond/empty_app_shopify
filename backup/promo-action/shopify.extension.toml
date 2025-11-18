@@ -3,8 +3,11 @@
 
 api_version = "2026-01"
 name = "promo-action"
-type = "admin_action"
 
-[[extensions.targeting]]
+uid = "aa547cf4-9a0e-d512-e8ae-3ee421ff0a10dd6ee30b"
+
+type = "ui_extension"
+
+[[targeting]]
 module = "./src/ActionExtension.jsx"
 target = "admin.discount-code-basic.action.render"
