@@ -30,3 +30,248 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+// Shop settings for invoice generation
+model ShopSettings {
+  id                    String    @id @default(uuid())
+  shop                  String    @unique
+  
+  // Seller identity (mandatory for French invoices)
+  companyName           String?
+  address               String?
+  postalCode            String?
+  city                  String?
+  country               String    @default("FR")
+  legalForm             String?   // SARL, SAS, etc.
+  shareCapital          String?   // Capital social
+  siren                 String?
+  siret                 String?
+  rcs                   String?   // RCS + ville (e.g., "RCS Paris")
+  tvaIntracom           String?   // VAT intracommunautaire
+  
+  // OSS configuration
+  ossEnabled            Boolean   @default(false)
+  ossNumber             String?   // OSS identification number
+  
+  // Franchise en base (TVA non applicable)
+  franchiseEnBase       Boolean   @default(false)
+  
+  // Invoice numbering
+  invoicePrefix         String    @default("FAC")
+  invoiceFormat         String    @default("{PREFIX}-{YYYY}-{NNNN}")
+  currentYear           Int       @default(2025)
+  currentSequence       Int       @default(0)
+  
+  // Settings
+  autoGenerateOnPaid    Boolean   @default(false)
+  defaultLanguage       String    @default("FR")
+  defaultCurrency       String    @default("EUR")
+  pdfTheme              String    @default("Standard") // Compact, Standard, Detail
+  
+  // Storage
+  storageProvider       String    @default("local") // local, s3
+  storageBucket         String?
+  storageRegion         String?
+  
+  // Payment terms
+  paymentTerms          String?   // e.g., "Paiement à réception"
+  latePenaltyRate       String?   // e.g., "3 fois le taux d'intérêt légal"
+  latePenaltyAmount     String    @default("40") // Indemnité forfaitaire (€)
+  
+  // Legal checklist (merchant confirmation)
+  legalChecklistConfirmed Boolean @default(false)
+  legalChecklistDate      DateTime?
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+// Main invoice model
+model Invoice {
+  id                String         @id @default(uuid())
+  shop              String
+  
+  // Invoice identification
+  invoiceNumber     String         @unique
+  issuedAt          DateTime       @default(now())
+  
+  // Shopify order reference
+  orderId           String         @unique
+  orderNumber       String?
+  orderName         String?        // e.g., "#1001"
+  
+  // Customer info
+  customerName      String
+  customerEmail     String?
+  customerAddress   String?
+  customerPostalCode String?
+  customerCity      String?
+  customerCountry   String
+  
+  // Seller info (snapshot at invoice creation)
+  sellerName        String
+  sellerAddress     String?
+  sellerSiren       String?
+  sellerSiret       String?
+  sellerRcs         String?
+  sellerTvaIntracom String?
+  sellerLegalForm   String?
+  sellerCapital     String?
+  
+  // Invoice lines
+  lines             InvoiceLine[]
+  
+  // Totals
+  totalHt           Float          // Total HT (excluding VAT)
+  totalTva          Float          // Total VAT
+  totalTtc          Float          // Total TTC (including VAT)
+  
+  // VAT/OSS info
+  ossApplied        Boolean        @default(false)
+  franchiseEnBase   Boolean        @default(false)
+  
+  // PDF storage
+  pdfUrl            String?
+  pdfPath           String?
+  pdfGenerated      Boolean        @default(false)
+  
+  // Notes and legal mentions
+  notes             String?
+  legalMentions     String?
+  
+  // Payment info
+  paymentTerms      String?
+  paymentStatus     String?        // paid, pending, etc.
+  paidAt            DateTime?
+  
+  // Metadata
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  
+  @@index([shop])
+  @@index([orderId])
+  @@index([customerCountry])
+  @@index([issuedAt])
+}
+
+// Invoice line items
+model InvoiceLine {
+  id              String    @id @default(uuid())
+  invoiceId       String
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  // Product info
+  sku             String?
+  productTitle    String
+  variantTitle    String?
+  description     String?
+  
+  // Quantities and pricing
+  quantity        Int
+  unitPriceHt     Float     // Unit price HT (excluding VAT)
+  
+  // VAT info
+  taxRate         Float     // VAT rate (e.g., 20.0 for 20%)
+  taxAmount       Float     // VAT amount for this line
+  
+  // Line totals
+  totalHt         Float     // Line total HT
+  totalTtc        Float     // Line total TTC
+  
+  // Order
+  lineOrder       Int       @default(0)
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([invoiceId])
+}
+
+// OSS (One Stop Shop) sales tracking
+model OssSale {
+  id              String    @id @default(uuid())
+  shop            String
+  
+  // Period tracking
+  year            Int
+  quarter         Int       // 1, 2, 3, 4
+  month           Int       // 1-12
+  
+  // Invoice reference
+  invoiceId       String
+  invoiceNumber   String
+  
+  // Customer location
+  customerCountry String    // ISO country code (e.g., "DE", "ES")
+  
+  // Amounts
+  baseHt          Float     // Base amount HT
+  taxRate         Float     // VAT rate applied
+  taxAmount       Float     // VAT amount
+  totalTtc        Float     // Total TTC
+  
+  // Metadata
+  saleDate        DateTime
+  createdAt       DateTime  @default(now())
+  
+  @@index([shop, year, quarter])
+  @@index([shop, customerCountry, year])
+  @@index([invoiceId])
+}
+
+// OSS threshold tracking (annual EU sales per country)
+model OssThreshold {
+  id              String    @id @default(uuid())
+  shop            String
+  year            Int
+  
+  // EU country tracking
+  countryCode     String    // ISO country code
+  
+  // Running totals
+  totalSalesHt    Float     @default(0)
+  totalSalesTtc   Float     @default(0)
+  orderCount      Int       @default(0)
+  
+  // Threshold status
+  thresholdReached Boolean  @default(false)
+  thresholdDate    DateTime?
+  
+  lastUpdated     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  
+  @@unique([shop, year, countryCode])
+  @@index([shop, year])
+}
+
+// Batch job tracking
+model BatchJob {
+  id              String    @id @default(uuid())
+  shop            String
+  
+  // Job info
+  jobType         String    // "invoice_generation", "oss_report"
+  status          String    // "pending", "processing", "completed", "failed"
+  
+  // Parameters
+  orderIds        String?   // JSON array of order IDs
+  filters         String?   // JSON object with filters
+  
+  // Progress
+  totalItems      Int       @default(0)
+  processedItems  Int       @default(0)
+  failedItems     Int       @default(0)
+  
+  // Results
+  resultUrl       String?   // ZIP download URL
+  resultPath      String?   // Path to result file
+  errorLog        String?   // JSON array of errors
+  
+  // Timing
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  
+  @@index([shop])
+  @@index([status])
+  @@index([createdAt])
+}
