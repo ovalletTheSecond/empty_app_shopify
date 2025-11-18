@@ -5,7 +5,7 @@
 
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import { generateOssReport, exportOssReportToCsv } from "~/services/oss.service";
+import { generateOssReport, exportOssReportToCsv } from "~/services/oss.service.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {

@@ -6,9 +6,9 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import { createInvoice } from "~/services/invoice.service";
-import { fetchShopifyOrder, convertShopifyOrderToInvoiceInput } from "~/services/shopify.service";
-import { generateInvoiceHtml, generatePdfFromHtml, savePdfToStorage } from "~/services/pdf.service";
+import { createInvoice } from "~/services/invoice.service.server";
+import { fetchShopifyOrder, convertShopifyOrderToInvoiceInput } from "~/services/shopify.service.server";
+import { generateInvoiceHtml, generatePdfFromHtml, savePdfToStorage } from "~/services/pdf.service.server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
