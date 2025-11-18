@@ -1,3 +1,56 @@
+# French B2C Invoice Generation App for Shopify
+
+Cette application Shopify génère des factures PDF conformes à la législation française et européenne pour les ventes B2C.
+
+## 🎯 Fonctionnalités principales
+
+- ✅ Génération de factures PDF avec toutes les mentions légales obligatoires
+- ✅ Gestion automatique de la TVA (France, UE, OSS)
+- ✅ Support du régime OSS (One Stop Shop) avec seuil €10,000
+- ✅ Support de la franchise en base (Art. 293 B CGI)
+- ✅ Numérotation séquentielle et configurable
+- ✅ Reporting OSS trimestriel (export CSV)
+- ✅ Interface d'administration Shopify Polaris
+
+## 📚 Documentation complète
+
+**Voir [INVOICE_APP_DOCUMENTATION.md](./INVOICE_APP_DOCUMENTATION.md) pour :**
+- Guide d'installation et configuration
+- Conformité légale et mentions obligatoires
+- Gestion de la TVA et OSS
+- API endpoints et utilisation
+- Dépannage
+
+## ⚠️ Avertissement important
+
+Cette application automatise la génération de factures mais ne remplace pas un conseil d'expert-comptable. Nous recommandons vivement la validation par un professionnel avant la première utilisation.
+
+## 🚀 Démarrage rapide
+
+```bash
+# Installation
+npm install
+
+# Configuration de la base de données
+npx prisma generate
+npx prisma migrate dev
+
+# Lancement en développement
+npm run dev
+```
+
+Ensuite, accéder à `/app/settings` pour configurer les informations de votre entreprise (SIREN, SIRET, TVA, etc.).
+
+## 🏗️ Architecture
+
+- **Backend**: Node.js + TypeScript + Remix
+- **Base de données**: SQLite (dev) / PostgreSQL (prod) + Prisma
+- **Frontend**: React + Shopify Polaris
+- **PDF**: HTML/CSS (Puppeteer ready)
+- **API**: Shopify Admin GraphQL
+
+---
+
 # Shopify App Template - Remix
 
 > [!NOTE]
